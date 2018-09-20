@@ -162,6 +162,7 @@ func NewJXCommand(f Factory, in io.Reader, out, err io.Writer) *cobra.Command {
 	cmds.Version = version.GetVersion()
 	cmds.SetVersionTemplate("{{printf .Version}}\n")
 	cmds.AddCommand(NewCmdOptions(out))
+	cmds.AddCommand(NewCmdDiagnostic(f, out, err))
 
 	return cmds
 }
