@@ -6,16 +6,19 @@ import (
 	"github.com/jenkins-x/jx/pkg/log"
 	"github.com/jenkins-x/jx/pkg/util"
 	"github.com/spf13/cobra"
+	"gopkg.in/AlecAivazis/survey.v1/terminal"
 )
 
 type DiagnosticOptions struct {
 	CommonOptions
 }
 
-func NewCmdDiagnostic(f Factory, out io.Writer, errOut io.Writer) *cobra.Command {
+// NewCmdDiagnostic creates a new command "jx diagnostic"
+func NewCmdDiagnostic(f Factory, in terminal.FileReader, out terminal.FileWriter, errOut io.Writer) *cobra.Command {
 	options := &DiagnosticOptions{
 		CommonOptions: CommonOptions{
 			Factory: f,
+			In:      in,
 			Out:     out,
 			Err:     errOut,
 		},
@@ -37,7 +40,7 @@ func NewCmdDiagnostic(f Factory, out io.Writer, errOut io.Writer) *cobra.Command
 
 func (o *DiagnosticOptions) Run() error {
 	// Get the JX version
-	output, err := o.getCommandOutput("", "jx", "version")
+	output, err := o.getCommandOutput("", "jx", "version", "--no-version-check")
 	if err != nil {
 		return err
 	}
