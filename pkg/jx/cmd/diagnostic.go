@@ -46,7 +46,7 @@ func (o *DiagnosticOptions) Run() error {
 		return err
 	}
 	currentNS := kube.CurrentNamespace(config)
-	log.Infof("*** Running in namespace: %s\n", util.ColorInfo(currentNS))
+	log.Infof("Running in namespace: %s\n", util.ColorInfo(currentNS))
 
 	output, err := o.getCommandOutput("", "jx", "version", "--no-version-check")
 	if err != nil {
