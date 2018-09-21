@@ -3,6 +3,7 @@ package cmd
 import (
 	"io"
 
+	"github.com/jenkins-x/jx/pkg/kube"
 	"github.com/jenkins-x/jx/pkg/log"
 	"github.com/jenkins-x/jx/pkg/util"
 	"github.com/spf13/cobra"
@@ -39,7 +40,14 @@ func NewCmdDiagnostic(f Factory, in terminal.FileReader, out terminal.FileWriter
 }
 
 func (o *DiagnosticOptions) Run() error {
-	// Run JX version to get the versions of the following: jx cli, helm, kubect
+	// Run JX version to get the versions of the following: jx cli, helm, kubectl
+	config, _, err := kube.LoadConfig()
+	if err != nil {
+		return err
+	}
+	currentNS := kube.CurrentNamespace(config)
+	log.Infof("*** Running in namespace: %s\n", util.ColorInfo(currentNS))
+
 	output, err := o.getCommandOutput("", "jx", "version", "--no-version-check")
 	if err != nil {
 		return err
@@ -84,6 +92,6 @@ func (o *DiagnosticOptions) Run() error {
 	log.Infof("%s\n", util.ColorInfo(output))
 
 	log.Info("\nPlease visit https://jenkins-x.io/faq/issues/ for any known issues.")
-	log.Info("\nFinished printing diagnostic information.")
+	log.Info("\nFinished printing diagnostic information.\n")
 	return nil
 }
