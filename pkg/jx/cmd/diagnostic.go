@@ -38,36 +38,51 @@ func NewCmdDiagnostic(f Factory, in terminal.FileReader, out terminal.FileWriter
 	return cmd
 }
 
-func (o *DiagnosticOptions) Run() error {
+func (o *DiagnosticOptions) Run() {
 	// Get the JX version
+	log.Info("*** Jenkins-X Version ***\n")
 	output, err := o.getCommandOutput("", "jx", "version", "--no-version-check")
 	if err != nil {
-		return err
+		log.Error("Unable to get Jenkins-X version info.\n")
+	} else {
+		log.Infof("%s\n", util.ColorInfo(output))
 	}
-	log.Info("*** JX Version ***\n")
-	log.Infof("%s\n", util.ColorInfo(output))
+
+	// Print the Jenkins-X status
+	log.Info("\n*** Jenkins-X Status ***\n")
+	output, err = o.getCommandOutput("", "jx", "status")
+	if err != nil {
+		log.Error("Failed to get the status of the Jenkins-X installation.")
+	} else {
+		log.Infof("%s\n", util.ColorInfo(output))
+	}
 
 	// Get the PVCs in the current namespace
+	log.Info("\n*** Kubernetes PVCs ***\n")
 	output, err = o.getCommandOutput("", "kubectl", "get", "pvc")
 	if err != nil {
-		return err
+		log.Error("Failed to get the Kubernetes PVCs.\n")
+	} else {
+		log.Infof("%s\n", util.ColorInfo(output))
 	}
-	log.Info("\n*** Kubernetes PVCs ***\n")
-	log.Infof("%s\n", util.ColorInfo(output))
 
 	// Get the pods in the current namespace
+	log.Info("\n*** Kubernetes Pods ***\n")
 	output, err = o.getCommandOutput("", "kubectl", "get", "po")
 	if err != nil {
-		return err
+		log.Error("Unable to get the Kubernetes pods.\n")
+	} else {
+		log.Infof("%s\n", util.ColorInfo(output))
 	}
-	log.Info("\n*** Kubernetes Pods ***\n")
-	log.Infof("%s\n", util.ColorInfo(output))
 
+	log.Info("\n*** Kubernetes Services ***\n")
 	output, err = o.getCommandOutput("", "kubectl", "get", "svc")
 	if err != nil {
-		return err
+		log.Error("Unable to get the Kubernetes services.\n")
+	} else {
+		log.Infof("%s\n", util.ColorInfo(output))
 	}
-	log.Info("\n*** Kubernetes Services ***\n")
-	log.Infof("%s\n", util.ColorInfo(output))
-	return nil
+
+	log.Info("\nPlease visit https://jenkins-x.io/faq/issues/ for any known issues.")
+	log.Info("\nFinished printing diagnostic information.")
 }
