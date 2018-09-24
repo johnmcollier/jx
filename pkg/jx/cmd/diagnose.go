@@ -26,7 +26,6 @@ func NewCmdDiagnose(f Factory, in terminal.FileReader, out terminal.FileWriter, 
 			Err:     errOut,
 		},
 	}
-
 	cmd := &cobra.Command{
 		Use:   "diagnose",
 		Short: "Print diagnostic information about the Jenkins-X installation",
@@ -37,8 +36,9 @@ func NewCmdDiagnose(f Factory, in terminal.FileReader, out terminal.FileWriter, 
 			CheckErr(err)
 		},
 	}
-	options.addCommonFlags(cmd)
+
 	cmd.Flags().StringVarP(&options.Namespace, "namespace", "n", "", "The namespace to display the kube resources from. If left out, defaults to the current namespace")
+	options.addCommonFlags(cmd)
 	return cmd
 }
 
@@ -103,7 +103,6 @@ func printStatus(o *DiagnoseOptions, header string, command string, options ...s
 	}
 
 	// Print the output of the command, and add a little header at the top for formatting / readability
-	log.Infof("\n%s:\n", header)
-	log.Infof("%s\n", util.ColorInfo(output))
+	log.Infof("\n%s:\n %s\n", header, util.ColorInfo(output))
 	return nil
 }
