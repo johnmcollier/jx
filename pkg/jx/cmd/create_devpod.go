@@ -81,6 +81,7 @@ type CreateDevPodOptions struct {
 	DockerRegistry  string
 	TillerNamespace string
 	ServiceAccount  string
+	Image	string
 
 	GitCredentials StepGitCredentialsOptions
 
@@ -140,6 +141,7 @@ func NewCmdCreateDevPod(f Factory, in terminal.FileReader, out terminal.FileWrit
 	cmd.Flags().StringVarP(&options.DockerRegistry, "docker-registry", "", "", "The Docker registry to use within the DevPod. If not specified, default to the built-in registry or $DOCKER_REGISTRY")
 	cmd.Flags().StringVarP(&options.TillerNamespace, "tiller-namespace", "", "", "The optional tiller namespace to use within the DevPod.")
 	cmd.Flags().StringVarP(&options.ServiceAccount, "service-account", "", "jenkins", "The ServiceAccount name used for the DevPod")
+	cmd.Flags().StringVarP(&options.Image, "image", "", "", "The image to be used within the DevPod.")
 
 	options.addCommonFlags(cmd)
 	return cmd
@@ -393,6 +395,12 @@ func (o *CreateDevPodOptions) Run() error {
 		Value: workingDir,
 	})
 	container1.Stdin = true
+
+	// If an image override was passed in, use it instead.
+	if o.Image != "" {
+		log.Infof("Using alternate image: %s", util.ColorInfo(o.Image))
+		container1.Image = o.Image
+	}
 
 	// If a Docker registry override was passed in, set it as an env var.
 	if o.DockerRegistry != "" {
